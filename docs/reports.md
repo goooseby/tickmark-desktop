@@ -20,6 +20,13 @@
     {
       "startMs": 1795521000000,
       "endMs": 1795521600000,
+      "state": 0
+    }
+  ],
+  "appRows": [
+    {
+      "startMs": 1795521000000,
+      "endMs": 1795521600000,
       "state": 0,
       "appId": "example.reader",
       "appName": "阅读器",
@@ -29,6 +36,8 @@
   ]
 }
 ```
+
+`rows` 是设备状态区间，`appRows` 是应用会话；两者都使用 UTC 毫秒和左闭右开区间。文件名必须与设备 `id` 一致，例如 `study-tablet.json`。`appRows` 可省略；省略时界面回退到 `rows` 读取应用字段，但带设备状态的多设备报告建议分开提供。
 
 ## AN 统计口径
 
