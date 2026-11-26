@@ -10,7 +10,8 @@ use tickmark_capture::{
     windows::tray,
 };
 
-mod report_sources;
+use tickmark_report as report_sources;
+
 mod account;
 mod account_vault;
 mod sync;

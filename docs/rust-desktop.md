@@ -6,7 +6,7 @@
 
 `tickmark-desktop.exe` 提供 Tauri 窗口。默认进入多设备仪表盘，另有今日复盘、趋势和设置；记录明细从时间轴选区、今日复盘或设置进入。关闭界面时采集器继续运行；重新打开窗口可以停表。关闭前需停表时，也可调用旁边的 `tickmark-capture.exe --stop`。采集由用户启动，当前没有开机自启。
 
-采集库使用 `capture.db` 区间表契约，以文件锁限制单进程写入。Tauri 读取 Windows 本机采集、同账号服务器记录和手动导入的设备报告。云端镜像按服务地址和账号隔离，退出后离开报表。CLI 待接入。
+采集库使用 `capture.db` 区间表契约，以文件锁限制单进程写入。Tauri 读取 Windows 本机采集、同账号服务器记录和手动导入的设备报告。云端镜像按服务地址和账号隔离，退出后离开报表。`tickmark.exe` 通过共享的 `tickmark-report` 库读取同一批数据，只读、离线，不参与采集和写入。设计见 [命令行界面](cli.md)。
 
 ## Windows 托盘
 
@@ -22,9 +22,19 @@
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/rust.ps1 build --workspace --locked
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/rust.ps1 test --workspace --locked
 .\artifacts\rust\debug\tickmark-desktop.exe
+.\artifacts\rust\debug\tickmark.exe status
 ```
 
-运行时把桌面、采集、托盘三个可执行文件留在同一目录。采用系统 WebView2，界面静态文件随 Tauri 程序编译。前端没有新增 Node 构建步骤。
+运行时把桌面、采集、托盘等可执行文件留在同一目录。采用系统 WebView2，界面静态文件随 Tauri 程序编译。前端没有新增 Node 构建步骤。
+
+生成安装包（按当前用户安装，自动配置 PATH）：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/rust.ps1 build --workspace --release --locked
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
+```
+
+`package.ps1` 把 release 版 `tickmark.exe` 作为 Tauri sidecar 并入 `tauri.bundle.conf.json`，再调用项目内的 `cargo-tauri` 生成 NSIS 安装包。sidecar 只在打包时加入，日常 `cargo build` / `cargo check` 不依赖 `native/ui/binaries/`。安装、PATH 与卸载细节见 [命令行界面](cli.md#打包与安装)。
 
 ## 实装到哪一步
 

@@ -9,5 +9,7 @@ obj/
 *.db-shm
 *.db-wal
 /native/ui/gen/schemas/
+/native/ui/binaries/
+/native/target/
 .trae-html-share-packages/
 .screenshots/

@@ -6,6 +6,9 @@ use rusqlite::{Connection, OptionalExtension, params};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
 
+use tickmark_report::cloud::{AppInterval, CloudDevice, DeviceInterval, Payload};
+pub use tickmark_report::cloud::reports;
+
 use crate::{account::{AccountError, AccountService, SyncSession}, dashboard_store, error_text};
 
 const DAY_MS: i64 = 86_400_000;
@@ -30,48 +33,6 @@ struct Change {
     seq: i64,
     payload_version: i64,
     payload: Option<Payload>,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CloudDevice {
-    pub device_id: String,
-    pub name: String,
-    pub platform: String,
-    pub kind: String,
-    pub last_seen_at: i64,
-}
-
-#[derive(Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Payload {
-    zone_id: String,
-    capture_profile: String,
-    pub device_intervals: Vec<DeviceInterval>,
-    pub app_intervals: Vec<AppInterval>,
-}
-
-#[derive(Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DeviceInterval {
-    pub start_ms: i64,
-    pub end_ms: i64,
-    pub state: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    reason: Option<String>,
-}
-
-#[derive(Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AppInterval {
-    pub start_ms: i64,
-    pub end_ms: i64,
-    pub app_id: String,
-    pub quality: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub display_name: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub domain: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -102,25 +63,6 @@ fn open(path: &Path) -> Result<Connection, String> {
         CREATE TABLE IF NOT EXISTS uploads (day INTEGER PRIMARY KEY, revision INTEGER NOT NULL, payload TEXT NOT NULL,
             acknowledged INTEGER NOT NULL);").map_err(error_text)?;
     Ok(db)
-}
-
-pub fn reports(path: &Path, start: i64, end: i64) -> Result<Vec<(CloudDevice, Vec<Payload>)>, String> {
-    if !path.is_file() { return Ok(Vec::new()); }
-    let db = Connection::open_with_flags(path, rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY).map_err(error_text)?;
-    db.busy_timeout(Duration::from_secs(3)).map_err(error_text)?;
-    let tx = db.unchecked_transaction().map_err(error_text)?;
-    let mut query = tx.prepare("SELECT id,name,platform,kind,seen FROM devices ORDER BY id").map_err(error_text)?;
-    let devices = query.query_map([], |row| Ok(CloudDevice {
-        device_id: row.get(0)?, name: row.get(1)?, platform: row.get(2)?, kind: row.get(3)?, last_seen_at: row.get(4)?
-    })).map_err(error_text)?.collect::<Result<Vec<_>, _>>().map_err(error_text)?;
-    let mut shards = tx.prepare("SELECT payload FROM shards WHERE device=? AND day>=? AND day<? AND payload IS NOT NULL ORDER BY day").map_err(error_text)?;
-    devices.into_iter().map(|device| {
-        let rows = shards.query_map(params![device.device_id, start.div_euclid(DAY_MS) * DAY_MS, end], |row| row.get::<_, String>(0))
-            .map_err(error_text)?;
-        let payloads = rows.map(|row| serde_json::from_str(&row.map_err(error_text)?).map_err(error_text))
-            .collect::<Result<Vec<Payload>, _>>()?;
-        Ok((device, payloads))
-    }).collect()
 }
 
 fn save_delta(db: &mut Connection, delta: Delta, own: &str, after: i64, epoch: Option<&str>) -> Result<(), String> {

@@ -118,6 +118,15 @@ small { display:block; font-size:12px; font-weight:400; color:var(--muted); }
 .workspace-bar strong { color:var(--text); font-weight:600; }
 .workspace-local { display:flex; align-items:center; gap:6px; }
 .workspace-local svg { width:14px;height:14px; }
+.workspace-status { display:flex; align-items:center; gap:10px; }
+.collector-status { display:inline-flex; align-items:center; gap:6px; min-height:22px; padding:0 6px; border:0; border-radius:6px; background:transparent; color:var(--muted); font:inherit; font-size:11.5px; cursor:pointer; }
+.collector-status:hover { background:var(--subtle); color:var(--text); }
+.collector-status:disabled { cursor:default; opacity:.6; }
+.collector-status .collector-dot { width:6px; height:6px; border-radius:50%; background:var(--offline); }
+.collector-status.on { color:var(--ok); }
+.collector-status.on .collector-dot { background:var(--ok); }
+.collector-status.warn { color:var(--device-3); }
+.collector-status.warn .collector-dot { background:var(--device-3); }
 .page { min-width:0; overflow:auto; padding:17px 23px 26px; }
 .heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 h1,h2,p,dl { margin:0; }

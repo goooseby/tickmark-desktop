@@ -1,5 +1,5 @@
 [workspace]
-members = ["capture", "ui"]
+members = ["capture", "report", "cli", "ui"]
 resolver = "2"
 
 [profile.release]

@@ -98,6 +98,24 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/rust.ps1 build -
 
 应用数据默认保存在 `%LOCALAPPDATA%\TickmarkDesktop`。采集由界面里的「开始采集」启动，当前没有开机自启。
 
+### 命令行
+
+安装包会把桌面端与 `tickmark.exe` 放在同一目录，并把该目录加入当前用户 PATH。安装完成后新开一个终端即可使用，不需要管理员权限：
+
+```powershell
+tickmark status
+tickmark report --date today
+tickmark query apps --range week --top 10
+```
+
+不安装时也可以直接运行构建产物，这种方式不会改动 PATH：
+
+```powershell
+.\artifacts\rust\debug\tickmark.exe devices
+```
+
+命令面、输出契约、安装与卸载行为见 [命令行界面](docs/cli.md)；给 AI 或脚本接入时直接提供 [AI 接入说明](docs/cli-agent.md)。
+
 ### 测试
 
 ```powershell
@@ -109,6 +127,8 @@ node --test native/tests/dashboard.test.mjs
 ```text
 native/
   capture/        Rust 采集器、托盘、SQLite 与 Windows 集成
+  report/         共享报表核心：设备读取、口径、聚合与时间轴
+  cli/            命令行入口 tickmark.exe
   ui/             Tauri 桌面壳
   web/            无构建步骤的 WebView 界面
   edge-extension/ Edge 域名与视频状态扩展
@@ -128,13 +148,16 @@ scripts/          构建与扩展注册脚本
 | [桌面面板与验收记录](docs/dashboard-review.md) | 界面迭代、截图检查和问题修正记录 |
 | [Windows 使用计时设计](docs/windows-usage-capture.md) | 前台、空闲、锁屏、视频豁免和页面识别 |
 | [跨端同步规则](docs/sync.md) | 邮箱账号、设备鉴权、修订、删除和下行 |
+| [命令行界面](docs/cli.md) | GUI + CLI 双入口、命令面、输出契约、安装与卸载 |
+| [AI 接入说明](docs/cli-agent.md) | 给 AI 与脚本的一页契约：参数、JSON 字段、SQL 表结构、系统提示 |
 | [系统规则索引](docs/README.md) | 所有规则文档的入口与变更记录 |
 
 ## 当前状态
 
 - Windows 本机采集、托盘、Edge 扩展和多设备报表已可用。
+- 命令行 `tickmark` 与桌面端共享报表核心，可查询、聚合、导出并执行只读 SQL。
 - 账号同步、Android 上行和 Windows 收发已实现；生产邮件已配置，真机后台行为仍需单独验证。
-- 待实现：命令行查询与导出、前后周期对照、应用/站点钻取、并行组合下钻。
+- 待实现：前后周期对照、应用/站点钻取、并行组合下钻。
 
 ## 数据与隐私
 

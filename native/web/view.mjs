@@ -43,7 +43,7 @@ const textTime = new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-
 const shortDate = new Intl.DateTimeFormat("zh-CN", { month: "long", day: "numeric", weekday: "long" });
 const today = () => dayKey(new Date());
 const state = { view: "dashboard", date: today(), period: "week", filter: "all", deviceFilter: "", ledgerFilter: "", chartMode: "devices", fold: true,
-  running: false, settings: null, account: null, browserSetup: null, ledgerOpen: new Set(), appsOpen: new Set(), rows: [], appRows: [],
+  running: null, settings: null, account: null, browserSetup: null, ledgerOpen: new Set(), appsOpen: new Set(), rows: [], appRows: [],
   devices: [], rejectedSources: 0, generation: 0, loading: false, dayPart: null, ledgerApps: true, ledgerOrigin: "dashboard",
   dashboard: { focus: null, sourcesOpen: false },
   ledgerScope: null };
@@ -96,6 +96,15 @@ function renderRail() {
   renderStatus();
 }
 function renderStatus() {
+  const collector = get("collector-status");
+  if (collector) {
+    const known = state.running !== null;
+    collector.classList.toggle("on", state.running === true);
+    collector.classList.toggle("warn", known && !state.running);
+    get("collector-status-text").textContent = !known ? "检查中" : state.running ? "采集中" : "采集已停止";
+    collector.title = !known ? "正在检查本机采集状态" : state.running ? "本机采集运行中，点击查看设置" : "本机采集已停止，点击开始采集";
+    collector.setAttribute("aria-label", collector.title);
+  }
   const hubCollector = document.querySelector("[data-hub-collector]");
   if (hubCollector) hubCollector.textContent = state.running ? "本机采集中" : "本机采集已停止";
   for (const label of document.querySelectorAll("[data-collector-status]")) {
@@ -1869,6 +1878,21 @@ async function load(force = false) {
 
 get("brandIcon").append(icon("chart"));
 get("lockIcon").append(icon("lock"));
+get("collector-status").addEventListener("click", async () => {
+  if (state.running) { selectView("settings"); return; }
+  const node = get("collector-status");
+  node.disabled = true;
+  try {
+    await invoke("start_collector");
+    await new Promise(resolve => setTimeout(resolve, 900));
+    await load(true);
+    message("已开始本机采集");
+  } catch (error) {
+    message(String(error));
+  } finally {
+    node.disabled = false;
+  }
+});
 connectAccount(invoke, {
   openSettings: () => selectView("settings"),
   signedIn: () => message("已登录 Tickmark"),

@@ -36,7 +36,13 @@
   <main class="workspace">
     <header class="workspace-bar">
       <span id="breadcrumbs"></span>
-      <span class="workspace-local"><span id="lockIcon"></span> 本地工作区</span>
+      <div class="workspace-status">
+        <button type="button" id="collector-status" class="collector-status" title="本机采集状态">
+          <span class="collector-dot" aria-hidden="true"></span>
+          <span id="collector-status-text" aria-live="polite">检查中</span>
+        </button>
+        <span class="workspace-local"><span id="lockIcon"></span> 本地工作区</span>
+      </div>
     </header>
     <div id="page" class="page"></div>
     <div id="notice" class="notice" role="status" hidden></div>

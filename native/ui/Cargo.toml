@@ -4,13 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [build-dependencies]
-tauri-build = "2"
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = "2"
+tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tickmark-capture = { path = "../capture" }
+tickmark-report = { path = "../report" }
 reqwest = { version = "0.13", default-features = false, features = ["json", "native-tls"] }
 tokio = { version = "1", features = ["sync", "time"] }
 uuid = { version = "1", features = ["v4", "serde"] }
