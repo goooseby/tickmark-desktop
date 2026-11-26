@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tickmark</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="view.mjs"></script>
+</head>
+<body>
+  <aside class="rail">
+    <div class="brand"><span id="brandIcon" class="brand-icon"></span><div>Tickmark<small>使用记录</small></div></div>
+    <div class="nav-label">工作区</div>
+    <nav id="nav" aria-label="主导航"></nav>
+    <div class="rail-bottom">
+      <button type="button" id="account-open" class="account-trigger" popovertarget="account-popover" aria-haspopup="dialog" aria-expanded="false">
+        <span id="account-avatar" class="account-avatar" aria-hidden="true"></span>
+        <span id="account-trigger-label" class="account-name">账号</span>
+      </button>
+      <button type="button" id="account-settings" class="account-gear" aria-label="设置" title="设置（Ctrl+,）" aria-keyshortcuts="Control+,"></button>
+    </div>
+    <section id="account-popover" class="account-popover" popover="auto" role="dialog" aria-label="Tickmark 账号与设置">
+      <div id="account-menu">
+        <div id="account-signed-in" class="account-profile" hidden><strong id="account-identity"></strong></div>
+        <p id="account-menu-status" class="account-status account-menu-status" role="status"></p>
+        <button type="button" id="account-login" class="account-item" hidden><span>邮箱登录</span></button>
+        <button type="button" id="account-menu-settings" class="account-item"><span>设置</span><kbd>Ctrl+,</kbd></button>
+        <div id="account-logout-row" class="account-logout-row" hidden>
+          <button type="button" id="account-logout" class="account-item danger"><span>退出登录</span></button>
+        </div>
+        <button type="button" id="account-retry" class="account-item" hidden>重试</button>
+      </div>
+      <p id="account-menu-error" class="account-error" role="alert" hidden></p>
+    </section>
+  </aside>
+  <main class="workspace">
+    <header class="workspace-bar">
+      <span id="breadcrumbs"></span>
+      <span class="workspace-local"><span id="lockIcon"></span> 本地工作区</span>
+    </header>
+    <div id="page" class="page"></div>
+    <div id="notice" class="notice" role="status" hidden></div>
+  </main>
+  <dialog id="account-login-panel" class="login-dialog" aria-labelledby="account-step-title">
+    <header class="login-header">
+      <h2 id="account-step-title">邮箱登录</h2>
+      <button type="button" id="account-back" class="login-close" aria-label="关闭登录"></button>
+    </header>
+    <form id="account-form" class="account-form" novalidate>
+      <div class="login-field" id="account-email-row">
+        <label for="account-email">邮箱</label>
+        <input id="account-email" type="email" autocomplete="email" spellcheck="false" maxlength="254" required>
+      </div>
+      <div class="login-field" id="account-code-row">
+        <label for="account-code">验证码</label>
+        <div class="login-inputs">
+          <input id="account-code" type="text" class="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+          <button type="button" id="account-send" class="login-send">获取验证码</button>
+        </div>
+      </div>
+      <div class="login-actions">
+        <button type="submit" class="primary login-submit">登录</button>
+      </div>
+      <p id="account-feedback" class="visually-hidden" role="status"></p>
+      <p id="account-error" class="account-error" role="alert" hidden></p>
+    </form>
+  </dialog>
+</body>
+</html>

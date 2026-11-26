@@ -1,0 +1,13 @@
+.tools/
+artifacts/
+build/
+bin/
+obj/
+.vs/
+*.user
+*.db
+*.db-shm
+*.db-wal
+/native/ui/gen/schemas/
+.trae-html-share-packages/
+.screenshots/

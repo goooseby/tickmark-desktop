@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Tickmark 网页计时",
+  "version": "0.1.0",
+  "description": "把 Edge 前台标签页的域名和视频播放状态交给本机 Tickmark 采集器。",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA50/9VaYFnBA6Qq9LIkd/Vx1YZh5tixLrCdbD5gaF4NvrDcc00ObJRwBtKb3HJOUPTjkcuCFfO+eqvfLIKjVaoaXRGHHApNcgpjmu8dCNBAPOf2pskqEmAM+GLwB1wz5JLgpYSk4RlsyN5dOAT4k93pdKalRcQK6eh0fQCsbNTAWi/7YXDogo6s0sG1RDkY6ZraKNsdE3mIkV4bifjihA4D8yNXs4CGsJyIkAiDqOIE080x25ZKGBG04KRbFzET04LXzRWxm20SA4ODHZVYj/C+X5yVVtDJh1YGZgOx7CPAqny6TwOytFedcJUVJuF0nw4PKdG0Yj+037sRBrCHVlWwIDAQAB",
+  "permissions": ["tabs", "nativeMessaging", "scripting"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "incognito": "not_allowed",
+  "background": { "service_worker": "background.js", "type": "module" }
+}
